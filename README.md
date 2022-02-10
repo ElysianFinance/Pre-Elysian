@@ -1,6 +1,6 @@
 # Pre-Elysian token
 
-This is the code for the Pre-Elysian token. See details on the [official Medium article](https://medium.com)
+This is the code for the Pre-Elysian token. See details on the [official Medium article](https://medium.com/@elysianfinance/announcing-elysian-finance-3554eb6c2a8a)
 
 
 ## Requirements
