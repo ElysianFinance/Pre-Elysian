@@ -18,7 +18,7 @@ contract PreElysianToken is Super {
 
   mapping( address => bool ) public isApprovedSeller;
   
-  constructor(address _owner) Super( "PreElysian", "pLYS", 18 ) Ownable(_owner) {
+  constructor(address _owner) Super( "Pre-Elysian", "pLYS", 18 ) Ownable(_owner) {
     uint256 initialSupply_ = 1000000000 * 1e18;
     requireSellerApproval = true;
     allowMinting = true;
