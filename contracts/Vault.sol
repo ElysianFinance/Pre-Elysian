@@ -11,7 +11,6 @@ import "./interfaces/ITreasury.sol";
 import "./interfaces/IBondingCalculator.sol";
 
 interface IERC20Metadata is IERC20 {
-
     function name() external view returns (string memory);
     function symbol() external view returns (string memory);
     function decimals() external view returns (uint8);
@@ -29,7 +28,6 @@ abstract contract Vault is ITreasury, Ownable {
     event TimelockStarted(uint timelockEndBlock);
 
     bool public isInitialized;
-
     uint public timelockDurationInBlocks;
     bool public isTimelockSet;
     uint public override getTimelockEndBlock;
@@ -49,11 +47,8 @@ abstract contract Vault is ITreasury, Ownable {
     address public override getBondingCalculator;
 
     mapping(address => bool) public isReserveToken;
-
     mapping(address => bool) public isPrincipleToken;
-
     mapping(address => bool) public isPrincipleDepositor;
-
     mapping(address => bool) public isReserveDepositor;
 
     modifier notInitialized {
