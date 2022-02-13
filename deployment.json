@@ -1,0 +1,8 @@
+{
+	"networks": {
+		"ganache": {
+			"PreElysianToken": "0x2E04f280100d640F856535f53253cf5B375f8411",
+			"ExercisePLYS": "0x0Fa619BA44600bc61F7b6CdC7aa952ad8Cc43D9C"
+		}
+	}
+}
