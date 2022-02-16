@@ -18,10 +18,10 @@ interface IERC20Metadata is IERC20 {
 
 interface IERC20Mintable {
     function mint(uint256 amount_) external;
-    function mint(address account_, uint256 ammount_) external;
+    function mint(uint256 amount_, address account_, bool isEscrowed) external;
 }
 
-abstract contract Vault is ITreasury, Ownable {
+contract Vault is ITreasury, Ownable {
 
     using SafeERC20 for IERC20;
 
@@ -50,6 +50,10 @@ abstract contract Vault is ITreasury, Ownable {
     mapping(address => bool) public isPrincipleToken;
     mapping(address => bool) public isPrincipleDepositor;
     mapping(address => bool) public isReserveDepositor;
+
+    constructor(address owner) public Ownable(owner) {
+        isInitialized = false;
+    }
 
     modifier notInitialized {
         require(!isInitialized);
@@ -177,16 +181,17 @@ abstract contract Vault is ITreasury, Ownable {
         IERC20(principleToken).safeTransferFrom(msg.sender, address(this), depositAmount_);
         uint value = IBondingCalculator(getBondingCalculator).principleValuation(principleToken, depositAmount_) / 1e9;
         uint forLP = value / LPProfitShare;
-        IERC20Mintable(getManagedToken).mint(stakingContract, value - forLP);
-        IERC20Mintable(getManagedToken).mint(LPRewardsContract, forLP);
+        //IERC20Mintable(getManagedToken).mint(stakingContract, value - forLP);
+        //IERC20Mintable(getManagedToken).mint(LPRewardsContract, forLP);
         return true;
     }
 
     function depositReserves(uint amount_) external returns ( bool ) {
-        require(isReserveDepositor[msg.sender] == true, "Not allowed to deposit");
-        IERC20(getReserveToken).safeTransferFrom( msg.sender, address(this), amount_);
+        //require(isReserveDepositor[msg.sender] == true, "Not allowed to deposit");
+        //IERC20(getReserveToken).safeTransferFrom( msg.sender, address(this), amount_);
         address managedToken_ = getManagedToken;
-        IERC20Mintable(managedToken_).mint(msg.sender, amount_ / 10**IERC20Metadata(managedToken_).decimals());
+        uint mintable = amount_ / 10 ** 9;
+        IERC20Mintable(managedToken_).mint(mintable, msg.sender, false);
         return true;
     }
 
@@ -195,7 +200,7 @@ abstract contract Vault is ITreasury, Ownable {
         address principleToken = getPrincipleToken;
         IERC20(principleToken).safeTransferFrom(msg.sender, address(this), depositAmount_);
         uint value = IBondingCalculator(getBondingCalculator).principleValuation(principleToken, depositAmount_) / 1e9;
-        IERC20Mintable(getManagedToken).mint(msg.sender, value);
+        //IERC20Mintable(getManagedToken).mint(msg.sender, value);
         return true;
     }
 

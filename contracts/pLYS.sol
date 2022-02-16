@@ -20,10 +20,10 @@ contract PreElysianToken is Super {
   
   constructor(address _owner) Super( "Pre-Elysian", "pLYS", 18 ) Ownable(_owner) {
     uint256 initialSupply_ = 1000000000 * 1e18;
-    requireSellerApproval = true;
+    requireSellerApproval = false;
     allowMinting = true;
     _addApprovedSeller( address(this) );
-    _addApprovedSeller( msg.sender );
+    _addApprovedSeller( _owner );
     _mint( _owner, initialSupply_ );
   }
 
@@ -79,7 +79,7 @@ contract PreElysianToken is Super {
   }
   
   function _beforeTokenTransfer(address from_, address to_, uint256 amount_ ) internal override {
-    require( (_balances[to_] > 0 || isApprovedSeller[from_] == true), "Account not approved to transfer pLYS." );
+    require( (/*_balances[to_] > 0 || */isApprovedSeller[from_] == true), "Account not approved to transfer pLYS." );
   }
 
   function mint( address recipient_, uint256 amount_) public virtual onlyOwner() {

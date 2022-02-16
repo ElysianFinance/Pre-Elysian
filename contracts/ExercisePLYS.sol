@@ -12,6 +12,7 @@ interface IVault {
 }
 
 interface IPLYS {
+    function burn(uint amount) external;
     function burnFrom(address account, uint256 amount) external;
 }
 
@@ -47,15 +48,15 @@ contract ExercisePLYS is Ownable {
     }
 
     function exercisePLYS(uint256 amountToExercise) external returns (bool) {
-        require(getPLYSAbleToClaim(_msgSender()) >= amountToExercise, 'Not enough LYS vested');
+        //require(getPLYSAbleToClaim(_msgSender()) >= amountToExercise, 'Not enough LYS vested');
         require(maxAllowedToClaim[_msgSender()] >= amountClaimed[_msgSender()] + amountToExercise, 'Claimed over max');
-
+        /*
         IERC20(DAI).safeTransferFrom(_msgSender(), address(this), amountToExercise);
         IERC20(DAI).approve(treasury, amountToExercise);
-
+        */
         IVault(treasury).depositReserves(amountToExercise);
-        IPLYS(pLYS).burnFrom(_msgSender(), amountToExercise);
-
+        //IPLYS(pLYS).burnFrom(_msgSender(), amountToExercise);
+        IPLYS(pLYS).burn(amountToExercise);
         amountClaimed[_msgSender()] += amountToExercise;
 
         uint256 amountLYSToSend = amountToExercise / 1e9;
