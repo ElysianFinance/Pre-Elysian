@@ -1,5 +1,5 @@
 {
-  "name": "plys",
+  "name": "PreElysian",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@elysianfinance/elysian-contracts": "^1.0.0",
+    "@elysianfinance/elysian-contracts": "^1.0.1",
     "@openzeppelin/contracts": "^3.1.0-solc-0.7",
     "@truffle/hdwallet-provider": "^2.0.3",
     "chai": "^4.3.6",
