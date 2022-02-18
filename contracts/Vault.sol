@@ -184,38 +184,54 @@ contract Vault is ITreasury, Ownable {
         IERC20(principleToken).safeTransferFrom(msg.sender, address(this), depositAmount_);
         uint value = IBondingCalculator(getBondingCalculator).principleValuation(principleToken, depositAmount_) / 1e9;
         uint forLP = value / LPProfitShare;
-        //IERC20Mintable(getManagedToken).mint(stakingContract, value - forLP);
-        //IERC20Mintable(getManagedToken).mint(LPRewardsContract, forLP);
+        IERC20Mintable(getManagedToken).mint(value - forLP, stakingContract, false);
+        IERC20Mintable(getManagedToken).mint(forLP, LPRewardsContract, false);
         return true;
     }
 
-    function depositReseves(uint amount_, address dst) external returns (bool) {
+    function depositReserves(uint amount_, address dst) external returns (bool) {
         require(isReserveDepositor[msg.sender] == true, "Not allowed to deposit");
         IERC20(getReserveToken).transferFrom( msg.sender, address(this), amount_);
-        address managedToken_ = getManagedToken;
         uint mintable = amount_.div(1e9);
-        IERC20Mintable(managedToken_).mint(mintable, dst, false);
+        IERC20Mintable(getManagedToken).mint(mintable, dst, false);
         return true;
     }
-
-
+ 
     function depositPrinciple(uint depositAmount_) external returns (bool) {
         require(isPrincipleDepositor[msg.sender], "Not allowed to deposit");
         address principleToken = getPrincipleToken;
         IERC20(principleToken).safeTransferFrom(msg.sender, address(this), depositAmount_);
         uint value = IBondingCalculator(getBondingCalculator).principleValuation(principleToken, depositAmount_) / 1e9;
-        //IERC20Mintable(getManagedToken).mint(msg.sender, value);
+        IERC20Mintable(getManagedToken).mint(value, msg.sender, false);
         return true;
     }
 
-    function migrateReserveAndPrinciple()
+    function migrateReserves()
         external
         onlyOwner
-        isTimelockExpired
+        //isTimelockExpired
         returns (bool saveGas_)
     {
-        IERC20(getReserveToken).safeTransfer(daoWallet, IERC20(getReserveToken).balanceOf(address(this)));
-        IERC20(getPrincipleToken).safeTransfer(daoWallet, IERC20(getPrincipleToken).balanceOf(address(this)));
+        uint reserveTokenBalance = IERC20(getReserveToken).balanceOf(address(this));
+        
+        if (reserveTokenBalance > 0) {
+            IERC20(getReserveToken).safeTransfer(daoWallet, reserveTokenBalance);
+        }
+
+        return true;
+    }
+
+    function migratePrinciple()
+        external
+        onlyOwner
+        //isTimelockExpired
+        returns (bool saveGas_)
+    {
+        uint principleTokenBalance = IERC20(getPrincipleToken).balanceOf(address(this));
+
+        if (principleTokenBalance > 0) {
+            IERC20(getPrincipleToken).safeTransfer(daoWallet, principleTokenBalance);
+        }
         return true;
     }
 
