@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity 0.7.5;
 
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./types/Ownable.sol";
@@ -17,6 +18,7 @@ interface IERC20Metadata is IERC20 {
 }
 
 interface IERC20Mintable {
+    function transfer(address to, uint value) external returns (bool);
     function mint(uint256 amount_) external;
     function mint(uint256 amount_, address account_, bool isEscrowed) external;
 }
@@ -24,6 +26,7 @@ interface IERC20Mintable {
 contract Vault is ITreasury, Ownable {
 
     using SafeERC20 for IERC20;
+    using SafeMath for uint256;
 
     event TimelockStarted(uint timelockEndBlock);
 
@@ -186,14 +189,15 @@ contract Vault is ITreasury, Ownable {
         return true;
     }
 
-    function depositReserves(uint amount_) external returns ( bool ) {
-        //require(isReserveDepositor[msg.sender] == true, "Not allowed to deposit");
-        //IERC20(getReserveToken).safeTransferFrom( msg.sender, address(this), amount_);
+    function depositReseves(uint amount_, address dst) external returns (bool) {
+        require(isReserveDepositor[msg.sender] == true, "Not allowed to deposit");
+        IERC20(getReserveToken).transferFrom( msg.sender, address(this), amount_);
         address managedToken_ = getManagedToken;
-        uint mintable = amount_ / 10 ** 9;
-        IERC20Mintable(managedToken_).mint(mintable, msg.sender, false);
+        uint mintable = amount_.div(1e9);
+        IERC20Mintable(managedToken_).mint(mintable, dst, false);
         return true;
     }
+
 
     function depositPrinciple(uint depositAmount_) external returns (bool) {
         require(isPrincipleDepositor[msg.sender], "Not allowed to deposit");
