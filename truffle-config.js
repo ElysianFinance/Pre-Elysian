@@ -6,8 +6,8 @@ const P_NULL = "0x00000000000000000000000000000000000000000000000000000000000000
 const privateKeys = [
   process.env.PRIVATE_KEY_OWNER,
   process.env.PRIVATE_KEY_1,
-  process.env.PRIVATE_KEY_2,
-  process.env.PRIVATE_KEY_3
+  //process.env.PRIVATE_KEY_2,
+  //process.env.PRIVATE_KEY_3
 ];
 
 //const provider_mainnet =  new HDWalletProvider(privateKeys[0] || P_NULL, process.env.PROVIDER_URL_MAINNET);
@@ -27,9 +27,17 @@ module.exports = {
     ganache: {
       gas: 6721975,
       gasPrice:20000000000, 
-      provider:provider_ganache,
-      network_id: 56
+      host: "127.0.0.1",     // Localhost
+      port: 8545,            // Standard Ganache UI port
+      network_id: 56,
     },
+    tests: {
+      gas: 6721975,
+      gasPrice:20000000000, 
+      host: "127.0.0.1",     // Localhost
+      port: 8545,            // Standard Ganache UI port
+      network_id: 56,
+    },    
     /*  testnet: {
         gas: 15000000,
         gasPrice:5000000000, 
