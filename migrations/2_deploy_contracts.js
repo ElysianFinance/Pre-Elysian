@@ -13,7 +13,8 @@ const PreElysianToken = artifacts.require("PreElysianToken");
 const ExercisePLYS = artifacts.require("ExercisePLYS");
 const Vault = artifacts.require("Vault");
 
-const LYS = elysianDeployment.targets["Elysian"].address;
+const LYS = elysianDeployment.targets["ProxyElysian"].address;
+
 const Treasury = elysianDeployment.targets["MyTreasury"].address;
 const DAI = "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3";
 
