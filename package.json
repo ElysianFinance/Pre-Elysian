@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test-ganache": "truffle test --network ganache",
+    "test-ganache": "truffle test --network tests",
     "build": "truffle compile",
     "deploy-ganache": "truffle deploy --network ganache --reset"
   },
