@@ -29,7 +29,6 @@ contract ExercisePLYS is Ownable, ReentrancyGuard {
     address public pLYS;
     address public LYS;
     address public DAI;
-
     address public treasury;
 
     constructor(address pLYS_, address lys_, address dai_, address treasury_) {
@@ -53,7 +52,7 @@ contract ExercisePLYS is Ownable, ReentrancyGuard {
     }
 
     function exercisePLYS(uint256 amountToExercise) external nonReentrant returns (bool) {
-        //require(getPLYSAbleToClaim(_msgSender()) >= amountToExercise, 'Not enough LYS vested');
+        require(getPLYSAbleToClaim(_msgSender()) >= amountToExercise, 'Not enough LYS vested');
         require(maxAllowedToClaim[_msgSender()] >= amountClaimed[_msgSender()].add(amountToExercise), 'Claimed over max');
         
         IERC20(DAI).transferFrom(_msgSender(), address(this), amountToExercise);
@@ -70,11 +69,17 @@ contract ExercisePLYS is Ownable, ReentrancyGuard {
 
     function getPLYSAbleToClaim(address vester) public view returns (uint256) {
         uint totalSupply = IElysian(LYS).totalSupply();
-        return (totalSupply.mul(percentCanVest[vester].mul(1e9).div(10000))).sub(amountClaimed[vester]) ;
+        uint firstTerm = percentCanVest[vester].mul(1e9);
+        return totalSupply.mul(firstTerm.div(10000)).sub(amountClaimed[vester]);
     }
-
+ 
+    
     function getTotalSupply() public view returns (uint) {
         uint totalSupply = IElysian(LYS).totalSupply();
         return totalSupply;
+    }
+
+    function getVestingTerms(address vester) public view returns (uint[2] memory) {
+        return [maxAllowedToClaim[vester], percentCanVest[vester]];
     }
 }
