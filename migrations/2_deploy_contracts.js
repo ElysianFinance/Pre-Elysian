@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const elysianDeployment = require('@elysianfinance/elysian-contracts/deployed/ganache/deployment.json');
 
 const {
     green,
@@ -9,18 +8,9 @@ const {
     yellow
 } = require("chalk");
 
-const PreElysianToken = artifacts.require("PreElysianToken");
-const ExercisePLYS = artifacts.require("ExercisePLYS");
-const Vault = artifacts.require("Vault");
 
-const LYS = elysianDeployment.targets["ProxyElysian"].address;
 
-const Treasury = elysianDeployment.targets["MyTreasury"].address;
-const DAI = "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3";
-
-const deploymentFile = require("../deployment.json");
-
-const saveBuild = (deployment) => {
+const saveBuild = (deployment, network) => {
     const dirName = `${__dirname}`.replace("\migrations", "");
     fs.writeFile(
         path.join(dirName, 
@@ -32,9 +22,30 @@ const saveBuild = (deployment) => {
             }
         }
     );
+    fs.writeFile(
+        `/data/code/BSC/Elysian/Frontend/src/deployed/${network}/pLYS/deployment.json`,
+        JSON.stringify(deployment, null, "\t"), 
+        function (err) {
+            if (err) {
+                console.log(err);
+            }
+        }
+    );
 }
 
 async function doDeploy(deployer, network, accounts) {
+    const elysianDeployment = require(`../../C-elysian-scaffold/deployed/${network}/deployment.json`);
+
+    const PreElysianToken = artifacts.require("PreElysianToken");
+    const ExercisePLYS = artifacts.require("ExercisePLYS");
+    const Vault = artifacts.require("Vault");
+    
+    const LYS = elysianDeployment.targets["ProxyElysian"].address;
+    
+    const Treasury = elysianDeployment.targets["MyTreasury"].address;
+    const DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
+    
+    const deploymentFile = require("../deployment.json");
 
     let PreElysianTokenContract = await deployer.deploy(
         PreElysianToken, accounts[0]
@@ -65,12 +76,14 @@ async function doDeploy(deployer, network, accounts) {
     }
 
     deploymentFile.networks[network] = deployment;
-    console.log(deploymentFile);
-    saveBuild(deploymentFile);
+    saveBuild(deploymentFile, network);
      
 }
 
 module.exports = (deployer, network, accounts) => {
+    if ( network === 'tests' ) { 
+        return 
+    } 
     deployer.then(async () => {
          
         await doDeploy(deployer, network, accounts);
